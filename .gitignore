@@ -10,3 +10,4 @@ backend/server.log
 backend/e2e_out.txt
 frontend/dist/
 .vite/
+backend/app/sessions/
