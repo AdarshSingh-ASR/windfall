@@ -1,0 +1,15 @@
+{
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "text": "CONTEXT: Hope Pantry cold fridge nearly full; 60 kg of dairy arriving from regional food bank: Hope Pantry fridge near capacity; divert 35 kg dairy to Regional Food Bank\n\nGLEANER SAYS: Hi St. Mary's Community Kitchen team,\n\nHope Pantry has 35 kg of dairy (milk, yogurt, cheese) arriving tomorrow morning that exceeds their cold‑storage capacity. Could you absorb this load in your refrigerated facility? We’d have volunteer Marco D. palletize the dairy and deliver it first thing in the morning (within the 48‑hour spoilage window). Please let us know if this works.\n\nThanks!\n\nYour structured reply."
+      }
+    ],
+    "tracking_id": "fba41f5f-2c9b-489f-88bf-7c4db152402e"
+  },
+  "message_id": 0,
+  "redact_message": null,
+  "created_at": "2026-09-08T20:48:46.714515+00:00",
+  "updated_at": "2026-09-08T20:48:46.714515+00:00"
+}

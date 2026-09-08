@@ -1,0 +1,12 @@
+.env
+.env.keys.ref
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+backend/gleaner.db
+backend/sessions/
+backend/server.log
+backend/e2e_out.txt
+frontend/dist/
+.vite/
