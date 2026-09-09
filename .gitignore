@@ -12,3 +12,4 @@ frontend/dist/
 .vite/
 backend/app/sessions/
 *.log
+backend/windfall.db
