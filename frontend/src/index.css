@@ -163,10 +163,93 @@ h1, h2, h3, h4 {
 
 /* ---------------------------------------------------------------- sidebar */
 .sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border-right: 1px solid var(--border);
   background: var(--surface-dim);
+  overflow: hidden;
+  padding: 18px 0 0;
+}
+.sidebar-fixed { padding: 0 16px; }
+.sidebar-fixed .section-label { margin-top: 0; }
+.sidebar-fixed-bottom {
+  padding: 0 16px 14px;
+  flex: 0 0 auto;
+}
+.sidebar-fixed-bottom .section-label { margin-top: 16px; }
+
+.opp-scroll {
+  flex: 1 1 auto;
+  min-height: 80px;
   overflow-y: auto;
-  padding: 18px 16px;
+  padding: 2px 16px 10px;
+  scrollbar-gutter: stable;
+}
+
+/* ------------------------------------------------- themed scrollbars ----- */
+/* Light, theme-consistent scrollbars everywhere (WebKit + Firefox).
+   Track blends into the surface; thumb is beige-400 with a beige-600
+   hover; corner matches the track. Arrows/steppers on Windows Chrome are
+   styled via ::-webkit-scrollbar-button. */
+* {
+  scrollbar-width: thin;                       /* Firefox */
+  scrollbar-color: var(--beige-400) transparent;
+}
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+  background: transparent;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface-dim);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--beige-400);
+  border: 3px solid var(--surface-dim);        /* padded, pill look */
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--beige-500);
+}
+::-webkit-scrollbar-thumb:active {
+  background: var(--beige-600);
+}
+::-webkit-scrollbar-corner { background: var(--surface-dim); }
+
+/* Light steppers (the little ▲▼ arrows on Windows) in theme colors. */
+::-webkit-scrollbar-button:single-button {
+  background: var(--surface-dim);
+  display: block;
+  height: 11px;
+  width: 11px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='5'><path d='M3.5 0 7 5H0z' fill='%237a6c57'/></svg>");
+}
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='5'><path d='M3.5 5 0 0h7z' fill='%237a6c57'/></svg>");
+}
+::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='5' height='7'><path d='M0 3.5 5 0v7z' fill='%237a6c57'/></svg>");
+}
+::-webkit-scrollbar-button:single-button:horizontal:increment {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='5' height='7'><path d='M5 3.5 0 7V0z' fill='%237a6c57'/></svg>");
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement:hover,
+::-webkit-scrollbar-button:single-button:vertical:increment:hover,
+::-webkit-scrollbar-button:single-button:horizontal:decrement:hover,
+::-webkit-scrollbar-button:single-button:horizontal:increment:hover {
+  background-color: var(--beige-200);
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement:active,
+::-webkit-scrollbar-button:single-button:vertical:increment:active,
+::-webkit-scrollbar-button:single-button:horizontal:decrement:active,
+::-webkit-scrollbar-button:single-button:horizontal:increment:active {
+  background-color: var(--beige-300);
 }
 
 .section-label {

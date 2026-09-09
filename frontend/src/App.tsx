@@ -144,37 +144,44 @@ export default function App() {
 
       {/* ------------------------------------------------- opportunities -- */}
       <aside className="sidebar">
-        <div className="section-label">Scouted opportunities</div>
-        {opps.length === 0 && (
-          <div style={{ color: "var(--muted-fg)", fontSize: 12.5 }}>
-            Nothing on the docket. Surface an opportunity below — Windfall takes it from there.
-          </div>
-        )}
-        {opps.map((o) => (
-          <div
-            key={o.id}
-            className={`opp-item ${o.id === selected ? "active" : ""}`}
-            onClick={() => setSelected(o.id)}
-          >
-            <div className="top">
-              <span>
-                <span className={`status-dot status-${o.status}`} />
-                {STATUS_LABEL[o.status] ?? o.status}
-              </span>
-              <span>{KIND_TAG[o.kind] ?? o.kind}</span>
+        <div className="sidebar-fixed">
+          <div className="section-label">Scouted opportunities</div>
+        </div>
+        <div className="opp-scroll">
+          {opps.length === 0 && (
+            <div style={{ color: "var(--muted-fg)", fontSize: 12.5 }}>
+              Nothing on the docket. Surface an opportunity below — Windfall takes it from there.
             </div>
-            <div className="title">{o.title.slice(0, 70)}{o.title.length > 70 ? "…" : ""}</div>
-            {(o.est_low > 0 || o.est_high > 0) && (
-              <div className="value">
-                {o.est_low === o.est_high
-                  ? fmtMoney(o.est_low)
-                  : `${fmtMoney(o.est_low)}–${fmtMoney(o.est_high)}`}
+          )}
+          {opps.map((o) => (
+            <div
+              key={o.id}
+              className={`opp-item ${o.id === selected ? "active" : ""}`}
+              onClick={() => setSelected(o.id)}
+            >
+              <div className="top">
+                <span>
+                  <span className={`status-dot status-${o.status}`} />
+                  {STATUS_LABEL[o.status] ?? o.status}
+                </span>
+                <span>{KIND_TAG[o.kind] ?? o.kind}</span>
               </div>
-            )}
-          </div>
-        ))}
+              <div className="title">{o.title.slice(0, 70)}{o.title.length > 70 ? "…" : ""}</div>
+              {(o.est_low > 0 || o.est_high > 0) && (
+                <div className="value">
+                  {o.est_low === o.est_high
+                    ? fmtMoney(o.est_low)
+                    : `${fmtMoney(o.est_low)}–${fmtMoney(o.est_high)}`}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
 
-        <div className="section-label">Surface an opportunity</div>
+        <div className="sidebar-fixed">
+          <div className="section-label">Surface an opportunity</div>
+        </div>
+        <div className="sidebar-fixed-bottom">
         {scenarios.map((s) => (
           <button
             key={s.id}
@@ -187,6 +194,7 @@ export default function App() {
             <div className="sub">{s.source}</div>
           </button>
         ))}
+        </div>
       </aside>
 
       {/* ----------------------------------------------------------- main */}
