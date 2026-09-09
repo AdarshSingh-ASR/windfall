@@ -1,57 +1,42 @@
-"""Shared structured vocabulary: the TriageCard protocol.
+"""Windfall protocol: typed contracts for the found-money pipeline.
 
-Every event Gleaner handles is triaged into one of these before anything
-runs. Every stakeholder message uses Msg. Decisions use Decision. This is
-the whole contract between the UI, the engine, and the agents.
+FileMove      — what Windfall submits to a clerk (or records internally).
+ProgramReply  — what a simulated issuing body answers.
+OpportunityMatch — triage output.
 """
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
 
-class TriageCard(BaseModel):
-    """The output of the triage graph for one event."""
+class OpportunityMatch(BaseModel):
+    """Output of the triage graph for one raw opportunity event."""
 
     event_id: str
-    event_type: str = Field(description="donation_offer | surge_need | volunteer_cancel | logistics | info")
-    urgency: int = Field(ge=1, le=5, description="1 = routine, 5 = critical right now")
-    category: str = Field(description="food_safety | matching | staffing | logistics | recognition | general")
+    kind: str = Field(description="settlement | benefit_window | discount_program | refund_rule | unclaimed_property")
+    source: str = Field(description="who issues it: utility, court, state comptroller, airline, agency")
     headline: str = Field(description="one line, <=90 chars")
-    action_plan: str = Field(description="what Gleaner will do, 1-3 sentences")
-    needs_human: bool = Field(description="true ONLY if policy/dignity/judgment requires the coordinator")
-    human_question: str = Field(default="", description="the one question for the human, if needs_human")
-    ttl_note: str = Field(default="", description="when this goes stale, if ever")
+    est_value_low: float = Field(description="conservative dollar estimate")
+    est_value_high: float = Field(description="optimistic dollar estimate")
+    deadline: str = Field(description="ISO date or 'rolling'")
+    confidence: float = Field(ge=0.0, le=1.0, description="eligibility confidence from the household profile")
+    what_it_takes: str = Field(description="documents/fields required to claim, 1-2 sentences")
+    needs_consent: bool = Field(description="true if human opt-in/SSN/signature is required before filing")
+    consent_question: str = Field(default="", description="the one question, if needs_consent")
 
 
-class Msg(BaseModel):
-    """One stakeholder turn in a conversation Gleaner conducts."""
+class FileMove(BaseModel):
+    """One filing move by Windfall."""
 
-    to: str = Field(description="actor id, e.g. donor-1")
-    intent: str = Field(description="ask | offer | confirm | decline | reroute | thank | update")
-    message: str = Field(description="1-3 sentences, warm, in character")
-    fields: dict = Field(default_factory=dict, description="structured payload (quantities, times, ids)")
-
-
-class ActorReply(BaseModel):
-    """What a simulated stakeholder answers."""
-
-    accept: bool
-    message: str = Field(description="1-2 sentences in character")
-    fields: dict = Field(default_factory=dict)
+    intent: str = Field(description="file | supply_info | appeal | done | closed | note")
+    message: str = Field(description="the actual submitted text / summary, procedural and exact")
+    fields: dict = Field(default_factory=dict, description="form fields, amounts, references")
 
 
-class Decision(BaseModel):
-    """A human gate record."""
+class ProgramReply(BaseModel):
+    """What an issuing body's clerk-agent answers."""
 
-    id: str
-    event_id: str
-    kind: str = Field(description="surge_commit | surplus_redirect | budget_spend | volunteer_conflict")
-    question: str
-    options: list[str] = Field(default_factory=list)
-    context: dict = Field(default_factory=dict)
-    status: str = Field(default="pending", description="pending | approved | declined")
-    answer_note: str = Field(default="")
-
-
-def describe_card(c: TriageCard) -> str:
-    return f"[{c.event_type} u{c.urgency}] {c.headline} -> {c.action_plan}"
+    status: str = Field(description="accepted | needs_more_info | denied | approved")
+    message: str = Field(description="2-3 sentences, in character, referencing their own rules")
+    fields: dict = Field(default_factory=dict, description="reference numbers, amounts, next steps")
+    appealable: bool = Field(default=False, description="does their own policy allow an appeal?")

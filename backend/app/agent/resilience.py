@@ -4,7 +4,7 @@ OpenRouter upstreams occasionally die mid-stream, and native response_format
 is unreliable for schema adherence on open models. So: every structured call
 is a plain completion with the schema spelled out, JSON extracted from the
 text, validated against the Pydantic model, retried on transients and on
-schema misses. This is boring on purpose — it never fails silent.
+schema misses.
 """
 from __future__ import annotations
 
@@ -22,6 +22,11 @@ _TRANSIENT = ("provider_unavailable", "midstream", "mid stream", "upstream",
               "content=None", "parse")
 
 
+def _transient(exc: Exception) -> bool:
+    s = str(exc).lower()
+    return any(t in s for t in _TRANSIENT)
+
+
 def call_with_retry(fn, *args, **kwargs):
     """fn(*args, **kwargs) -> result. Retries transient provider errors."""
     last: Exception | None = None
@@ -34,11 +39,6 @@ def call_with_retry(fn, *args, **kwargs):
                 raise
             time.sleep(BASE_DELAY * (2 ** attempt))
     raise last  # pragma: no cover
-
-
-def _transient(exc: Exception) -> bool:
-    s = str(exc).lower()
-    return any(t in s for t in _TRANSIENT)
 
 
 def chat(model_id: str, api_key: str | None, system: str, user: str,
@@ -75,10 +75,14 @@ def structured(model_id: str, api_key: str | None, system: str, user: str,
                model_cls, max_tokens: int = 1200):
     """Completion whose text must contain the model_cls as JSON. Retries on
     both transient errors and schema misses."""
-    schema_json = json.dumps(model_cls.model_json_schema(), indent=0)
+    schema_json = json.dumps(
+        {k: v for k, v in model_cls.model_json_schema().items() if k != "description"},
+        indent=0,
+    )
     sys_full = (
         f"{system}\n\nOUTPUT CONTRACT: Your entire answer MUST be a single JSON "
-        f"object (no prose, no code fences) matching this schema:\n{schema_json}"
+        f"object (no prose, no code fences) with EXACTLY these keys (the schema below "
+        f"is metadata — do NOT echo 'properties' or 'type', output the fields directly):\n{schema_json}"
     )
     last: Exception | None = None
     for attempt in range(MAX_ATTEMPTS):

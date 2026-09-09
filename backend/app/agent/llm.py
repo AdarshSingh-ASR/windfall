@@ -1,17 +1,11 @@
-"""Model providers for Gleaner and the simulated actors.
-
-Two models, two rate-limit buckets: Gleaner (the coordinator) reasons on
-gpt-oss-120b; donors, volunteers, and pantry clerks run on gpt-oss-20b.
-Both via LiteLLM, so any vendor works by changing one env var.
-"""
+"""Model providers for Windfall and the simulated issuing bodies."""
 from __future__ import annotations
 
-import os
 from functools import lru_cache
 
 from strands.models.litellm import LiteLLMModel
 
-from ..config import ACTOR_MODEL, GLEANER_MODEL, OPENROUTER_API_KEY
+from ..config import ACTOR_MODEL, OPENROUTER_API_KEY, WINDFALL_MODEL
 
 _PARAMS = {
     "temperature": 0.4,
@@ -30,8 +24,8 @@ def _model(model_id: str) -> LiteLLMModel:
 
 
 @lru_cache(maxsize=4)
-def gleaner_model() -> LiteLLMModel:
-    return _model(GLEANER_MODEL)
+def windfall_model() -> LiteLLMModel:
+    return _model(WINDFALL_MODEL)
 
 
 @lru_cache(maxsize=4)

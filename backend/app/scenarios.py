@@ -1,47 +1,47 @@
-"""Seed scenarios: the living event stream of the Riverside Food Network."""
+"""Seed scenarios: opportunities Windfall's scouts surface."""
 from __future__ import annotations
 
 SCENARIOS: dict[str, dict] = {
-    "surplus-sunday": dict(
-        kind="donation_offer",
-        title="Greenfield Farms: 140 kg surplus produce after Sunday market",
+    "utility-discount": dict(
+        kind="discount_program",
+        source="Riverside Power & Light",
+        title="LIDR: 20% monthly discount for households under 60% state median income",
         payload=dict(
-            donor="donor-greenfield",
-            quantity_kg=140,
-            window="today 15:00-18:00 pickup",
-            contents="mixed produce: greens, tomatoes, squash, stone fruit",
-            receipt_needed=True,
+            clerk_id="clerk-rpl-discounts",
+            program="Low-Income Discount Rate",
+            benefit="20% off monthly bill",
+            window="rolling",
         ),
     ),
-    "fridge-short": dict(
-        kind="logistics",
-        title="Hope Pantry cold fridge nearly full; 60 kg of dairy arriving from regional food bank",
+    "flight-delay": dict(
+        kind="refund_rule",
+        source="Meridian Air",
+        title="Flight 2214 arrived 3h41m late — controllable delay, DOT compensation applies",
         payload=dict(
-            destination="pantry-hope",
-            quantity_kg=60,
-            contents="dairy: milk, yogurt, cheese",
-            arrive_by="tomorrow 09:00",
-            problem="only 25 kg cold capacity left; dairy spoils in 48h without cold chain",
+            clerk_id="clerk-airline-comp",
+            flight="2214 RIV-DEN 2026-08-14",
+            delay="3h41m",
+            cause="crew scheduling",
         ),
     ),
-    "surge-storm": dict(
-        kind="surge_need",
-        title="Storm shelter request: 300 hot meals tonight, usual kitchen at half staff",
+    "unclaimed-property": dict(
+        kind="unclaimed_property",
+        source="State Controller",
+        title="Dormant savings account ($318.40) matched to a former address of record",
         payload=dict(
-            requester="partner-foodbank",
-            meals_needed=300,
-            deadline="tonight 19:00",
-            complication="St. Mary's can cook but two volunteer drivers cancelled; shelter is 22 min away",
+            clerk_id="clerk-state-comptroller",
+            amount=318.40,
+            record_address="9 Corbin St, Riverside CA",
         ),
     ),
-    "driver-no-show": dict(
-        kind="volunteer_cancel",
-        title="Priya cancelled tonight's pickup run — 90 kg of bakery rescue will be missed",
+    "class-settlement": dict(
+        kind="settlement",
+        source="In re Riverside Water Rates Class Settlement",
+        title="Water-rate overcharge settlement: $85-$140 per customer account, claims close soon",
         payload=dict(
-            run="bakery rescue, Tue 18:30, 90 kg from three bakeries",
-            cancelled_by="volunteer-priya",
-            backup="volunteer-marco (mornings only, truck)",
-            fallback="partner-rideshare voucher ($18/run, 2h lead)",
+            clerk_id="clerk-settlements-admin",
+            class_period="2023-2025",
+            deadline="2026-09-30",
         ),
     ),
 }

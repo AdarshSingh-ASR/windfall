@@ -1,4 +1,4 @@
-"""SQLite store: events, conversations, decisions, ledger, activity."""
+"""SQLite store: opportunities, claims, decisions, ledger, activity."""
 from __future__ import annotations
 
 import json
@@ -7,24 +7,27 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-DB_PATH = Path(__file__).resolve().parent.parent / "gleaner.db"
+DB_PATH = Path(__file__).resolve().parent.parent / "windfall.db"
 
 SCHEMA = """
-CREATE TABLE IF NOT EXISTS events (
+CREATE TABLE IF NOT EXISTS opportunities (
   id TEXT PRIMARY KEY,
-  kind TEXT NOT NULL,              -- donation_offer | surge_need | volunteer_cancel | logistics
+  kind TEXT NOT NULL,
+  source TEXT NOT NULL,
   title TEXT NOT NULL,
   payload TEXT NOT NULL DEFAULT '{}',
-  status TEXT NOT NULL DEFAULT 'new',   -- new | triaged | working | needs_human | resolved | failed
+  status TEXT NOT NULL DEFAULT 'new',  -- new | triaged | filing | needs_consent | awaiting | approved | denied | appeal | failed
   triage TEXT,
+  est_low REAL DEFAULT 0,
+  est_high REAL DEFAULT 0,
   outcome TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS turns (
   id TEXT PRIMARY KEY,
-  event_id TEXT NOT NULL,
-  side TEXT NOT NULL,              -- gleaner | actor:<id> | system
+  opportunity_id TEXT NOT NULL,
+  side TEXT NOT NULL,              -- windfall | clerk:<id> | system
   intent TEXT NOT NULL,
   message TEXT NOT NULL,
   fields TEXT,
@@ -32,10 +35,9 @@ CREATE TABLE IF NOT EXISTS turns (
 );
 CREATE TABLE IF NOT EXISTS decisions (
   id TEXT PRIMARY KEY,
-  event_id TEXT NOT NULL,
+  opportunity_id TEXT NOT NULL,
   kind TEXT NOT NULL,
   question TEXT NOT NULL,
-  options TEXT NOT NULL DEFAULT '[]',
   context TEXT NOT NULL DEFAULT '{}',
   status TEXT NOT NULL DEFAULT 'pending',
   answer_note TEXT DEFAULT '',
@@ -44,16 +46,16 @@ CREATE TABLE IF NOT EXISTS decisions (
 );
 CREATE TABLE IF NOT EXISTS ledger (
   id TEXT PRIMARY KEY,
-  event_id TEXT,
-  metric TEXT NOT NULL,            -- meals | volunteer_hours | kg_saved | usd_value
+  opportunity_id TEXT,
+  label TEXT NOT NULL,
   amount REAL NOT NULL,
-  note TEXT DEFAULT '',
+  kind TEXT NOT NULL DEFAULT 'recovered',  -- recovered | annualized | pending
   created_at TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS actors (
+CREATE TABLE IF NOT EXISTS clerks (
   id TEXT PRIMARY KEY,
-  kind TEXT NOT NULL,              -- donor | volunteer | pantry | partner
-  name TEXT NOT NULL,
+  org TEXT NOT NULL,
+  role TEXT NOT NULL,
   persona TEXT NOT NULL,
   state TEXT NOT NULL DEFAULT '{}'
 );
@@ -79,34 +81,32 @@ def new_id(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex[:10]}"
 
 
-# ------------------------------------------------------------------ events --
-
-def create_event(kind: str, title: str, payload: dict) -> str:
-    eid = new_id("evt")
+def create_opportunity(kind: str, source: str, title: str, payload: dict) -> str:
+    oid = new_id("opp")
     with _conn() as c:
         c.execute(
-            "INSERT INTO events (id, kind, title, payload, status, created_at, updated_at) "
-            "VALUES (?,?,?,?,?,?,?)",
-            (eid, kind, title, json.dumps(payload), "new", _now(), _now()),
+            "INSERT INTO opportunities (id, kind, source, title, payload, status, created_at, updated_at) "
+            "VALUES (?,?,?,?,?,?,?,?)",
+            (oid, kind, source, title, json.dumps(payload), "new", _now(), _now()),
         )
-    return eid
+    return oid
 
 
-def update_event(eid: str, **kw) -> None:
+def update_opportunity(oid: str, **kw) -> None:
     cols, vals = [], []
     for k, v in kw.items():
         cols.append(f"{k}=?")
         vals.append(json.dumps(v) if isinstance(v, (dict, list)) else v)
     cols.append("updated_at=?")
     vals.append(_now())
-    vals.append(eid)
+    vals.append(oid)
     with _conn() as c:
-        c.execute(f"UPDATE events SET {', '.join(cols)} WHERE id=?", vals)
+        c.execute(f"UPDATE opportunities SET {', '.join(cols)} WHERE id=?", vals)
 
 
-def get_event(eid: str) -> dict | None:
+def get_opportunity(oid: str) -> dict | None:
     with _conn() as c:
-        row = c.execute("SELECT * FROM events WHERE id=?", (eid,)).fetchone()
+        row = c.execute("SELECT * FROM opportunities WHERE id=?", (oid,)).fetchone()
     if not row:
         return None
     d = dict(row)
@@ -115,10 +115,10 @@ def get_event(eid: str) -> dict | None:
     return d
 
 
-def list_events(limit: int = 100) -> list[dict]:
+def list_opportunities(limit: int = 100) -> list[dict]:
     with _conn() as c:
         rows = c.execute(
-            "SELECT * FROM events ORDER BY created_at DESC LIMIT ?", (limit,)
+            "SELECT * FROM opportunities ORDER BY created_at DESC LIMIT ?", (limit,)
         ).fetchall()
     out = []
     for row in rows:
@@ -129,21 +129,19 @@ def list_events(limit: int = 100) -> list[dict]:
     return out
 
 
-# ------------------------------------------------------------------- turns --
-
-def add_turn(event_id: str, side: str, intent: str, message: str, fields: dict | None = None) -> None:
+def add_turn(oid: str, side: str, intent: str, message: str, fields: dict | None = None) -> None:
     with _conn() as c:
         c.execute(
-            "INSERT INTO turns (id, event_id, side, intent, message, fields, created_at) "
+            "INSERT INTO turns (id, opportunity_id, side, intent, message, fields, created_at) "
             "VALUES (?,?,?,?,?,?,?)",
-            (new_id("trn"), event_id, side, intent, message, json.dumps(fields or {}), _now()),
+            (new_id("trn"), oid, side, intent, message, json.dumps(fields or {}), _now()),
         )
 
 
-def list_turns(event_id: str) -> list[dict]:
+def list_turns(oid: str) -> list[dict]:
     with _conn() as c:
         rows = c.execute(
-            "SELECT * FROM turns WHERE event_id=? ORDER BY created_at, id", (event_id,)
+            "SELECT * FROM turns WHERE opportunity_id=? ORDER BY created_at, id", (oid,)
         ).fetchall()
     out = []
     for row in rows:
@@ -153,15 +151,13 @@ def list_turns(event_id: str) -> list[dict]:
     return out
 
 
-# --------------------------------------------------------------- decisions --
-
-def create_decision(event_id: str, kind: str, question: str, options: list[str], context: dict) -> str:
+def create_decision(oid: str, kind: str, question: str, context: dict) -> str:
     did = new_id("dec")
     with _conn() as c:
         c.execute(
-            "INSERT INTO decisions (id, event_id, kind, question, options, context, created_at) "
-            "VALUES (?,?,?,?,?,?,?)",
-            (did, event_id, kind, question, json.dumps(options), json.dumps(context), _now()),
+            "INSERT INTO decisions (id, opportunity_id, kind, question, context, created_at) "
+            "VALUES (?,?,?,?,?,?)",
+            (did, oid, kind, question, json.dumps(context), _now()),
         )
     return did
 
@@ -172,7 +168,6 @@ def get_decision(did: str) -> dict | None:
     if not row:
         return None
     d = dict(row)
-    d["options"] = json.loads(d["options"] or "[]")
     d["context"] = json.loads(d["context"] or "{}")
     return d
 
@@ -185,16 +180,15 @@ def answer_decision(did: str, status: str, note: str = "") -> None:
         )
 
 
-def pending_decision_for(event_id: str) -> dict | None:
+def pending_decision_for(oid: str) -> dict | None:
     with _conn() as c:
         row = c.execute(
-            "SELECT * FROM decisions WHERE event_id=? AND status='pending' ORDER BY created_at DESC",
-            (event_id,),
+            "SELECT * FROM decisions WHERE opportunity_id=? AND status='pending' ORDER BY created_at DESC",
+            (oid,),
         ).fetchone()
     if not row:
         return None
     d = dict(row)
-    d["options"] = json.loads(d["options"] or "[]")
     d["context"] = json.loads(d["context"] or "{}")
     return d
 
@@ -207,41 +201,36 @@ def list_decisions(limit: int = 50) -> list[dict]:
     out = []
     for row in rows:
         d = dict(row)
-        d["options"] = json.loads(d["options"] or "[]")
         d["context"] = json.loads(d["context"] or "{}")
         out.append(d)
     return out
 
 
-# ------------------------------------------------------------------ ledger --
-
-def ledger_add(event_id: str, metric: str, amount: float, note: str = "") -> None:
+def ledger_add(oid: str, label: str, amount: float, kind: str = "recovered") -> None:
     with _conn() as c:
         c.execute(
-            "INSERT INTO ledger (id, event_id, metric, amount, note, created_at) VALUES (?,?,?,?,?,?)",
-            (new_id("led"), event_id, metric, amount, note, _now()),
+            "INSERT INTO ledger (id, opportunity_id, label, amount, kind, created_at) VALUES (?,?,?,?,?,?)",
+            (new_id("led"), oid, label, amount, kind, _now()),
         )
 
 
 def ledger_totals() -> dict:
     with _conn() as c:
-        rows = c.execute("SELECT metric, SUM(amount) s FROM ledger GROUP BY metric").fetchall()
-    return {r["metric"]: r["s"] for r in rows}
+        rows = c.execute("SELECT kind, SUM(amount) s FROM ledger GROUP BY kind").fetchall()
+    return {r["kind"]: r["s"] for r in rows}
 
 
-# ------------------------------------------------------------------ actors --
-
-def seed_actor(aid: str, kind: str, name: str, persona: str, state: dict | None = None) -> None:
+def seed_clerk(cid: str, org: str, role: str, persona: str, state: dict | None = None) -> None:
     with _conn() as c:
         c.execute(
-            "INSERT OR REPLACE INTO actors (id, kind, name, persona, state) VALUES (?,?,?,?,?)",
-            (aid, kind, name, persona, json.dumps(state or {})),
+            "INSERT OR REPLACE INTO clerks (id, org, role, persona, state) VALUES (?,?,?,?,?)",
+            (cid, org, role, persona, json.dumps(state or {})),
         )
 
 
-def get_actor(aid: str) -> dict | None:
+def get_clerk(cid: str) -> dict | None:
     with _conn() as c:
-        row = c.execute("SELECT * FROM actors WHERE id=?", (aid,)).fetchone()
+        row = c.execute("SELECT * FROM clerks WHERE id=?", (cid,)).fetchone()
     if not row:
         return None
     d = dict(row)
@@ -249,9 +238,9 @@ def get_actor(aid: str) -> dict | None:
     return d
 
 
-def list_actors() -> list[dict]:
+def list_clerks() -> list[dict]:
     with _conn() as c:
-        rows = c.execute("SELECT * FROM actors").fetchall()
+        rows = c.execute("SELECT * FROM clerks").fetchall()
     out = []
     for row in rows:
         d = dict(row)

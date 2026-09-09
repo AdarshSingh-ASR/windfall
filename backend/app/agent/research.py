@@ -1,4 +1,4 @@
-"""Optional Tavily-backed web research tool for food-safety leverage."""
+"""Optional Tavily-backed web research tool for program rules and dollar bands."""
 from __future__ import annotations
 
 from strands import tool
@@ -8,7 +8,7 @@ from ..config import TAVILY_API_KEY
 
 @tool
 def web_search(query: str) -> str:
-    """Search the web for food-safety rules, logistics norms, or grant/deadline info."""
+    """Search the web for program rules, compensation bands, or filing requirements."""
     if not TAVILY_API_KEY:
         return "(web search unavailable; rely on general knowledge)"
     try:
