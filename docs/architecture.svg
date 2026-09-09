@@ -1,51 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" font-family="Segoe UI, sans-serif">
-  <rect width="980" height="560" fill="#f7f3ea"/>
-  <text x="30" y="42" font-size="24" font-weight="700" fill="#1a1610">Gleaner — architecture</text>
-  <rect x="30" y="70" width="220" height="60" rx="8" fill="#fbf8f1" stroke="#1a1610" stroke-width="2"/>
-  <text x="140" y="97" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1610">Event stream</text>
-  <text x="140" y="116" text-anchor="middle" font-size="11" fill="#6f6754">surplus · surge · no-show · cold chain</text>
-  <rect x="330" y="62" width="300" height="76" rx="8" fill="#fff" stroke="#1a1610" stroke-width="2"/>
-  <text x="480" y="88" text-anchor="middle" font-size="14" font-weight="700" fill="#d3492c">TRIAGE GRAPH (Strands)</text>
-  <text x="480" y="108" text-anchor="middle" font-size="12" fill="#1a1610">intake &#8594; research (Tavily) &#8594; plan</text>
-  <text x="480" y="126" text-anchor="middle" font-size="11" fill="#6f6754">TriageCard: urgency · plan · needs_human</text>
-  <rect x="710" y="62" width="240" height="76" rx="8" fill="#f7ded4" stroke="#d3492c" stroke-width="2"/>
-  <text x="830" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="#d3492c">&#128993; DECISION CARD</text>
-  <text x="830" y="112" text-anchor="middle" font-size="11" fill="#1a1610">only real judgment calls:</text>
-  <text x="830" y="128" text-anchor="middle" font-size="11" fill="#1a1610">spend · policy · conflict</text>
-  <rect x="330" y="210" width="300" height="120" rx="8" fill="#fff" stroke="#1a1610" stroke-width="2"/>
-  <text x="480" y="238" text-anchor="middle" font-size="14" font-weight="700" fill="#1a1610">ENGINE (quiet by default)</text>
-  <text x="480" y="258" text-anchor="middle" font-size="12" fill="#1a1610">structured Msg protocol</text>
-  <text x="480" y="276" text-anchor="middle" font-size="11" fill="#6f6754">match · reroute · confirm · thank</text>
-  <text x="480" y="294" text-anchor="middle" font-size="11" fill="#6f6754">retries · pacing · step budget</text>
-  <text x="480" y="312" text-anchor="middle" font-size="11" fill="#6f6754">SQLite: events · turns · decisions · ledger</text>
-  <g font-size="11" fill="#1a1610">
-    <rect x="80" y="400" width="150" height="54" rx="8" fill="#fbf8f1" stroke="#1a1610"/>
-    <text x="155" y="423" text-anchor="middle" font-weight="600">&#128668; Greenfield Farms</text>
-    <text x="155" y="440" text-anchor="middle" font-size="10" fill="#6f6754">donor agent</text>
-    <rect x="260" y="400" width="150" height="54" rx="8" fill="#fbf8f1" stroke="#1a1610"/>
-    <text x="335" y="423" text-anchor="middle" font-weight="600">&#128664; Jun / Marco / Priya</text>
-    <text x="335" y="440" text-anchor="middle" font-size="10" fill="#6f6754">volunteer agents</text>
-    <rect x="440" y="400" width="150" height="54" rx="8" fill="#fbf8f1" stroke="#1a1610"/>
-    <text x="515" y="423" text-anchor="middle" font-weight="600">&#127978; Hope Pantry · St. Mary&apos;s</text>
-    <text x="515" y="440" text-anchor="middle" font-size="10" fill="#6f6754">pantry agents</text>
-    <rect x="620" y="400" width="150" height="54" rx="8" fill="#fbf8f1" stroke="#1a1610"/>
-    <text x="695" y="423" text-anchor="middle" font-weight="600">&#129309; Food bank · CityRide</text>
-    <text x="695" y="440" text-anchor="middle" font-size="10" fill="#6f6754">partner agents</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" font-family="Archivo, Segoe UI, sans-serif">
+  <rect width="980" height="560" fill="#fbf9f5"/>
+  <text x="30" y="42" font-size="24" font-weight="600" fill="#1d1a14">Windfall &#8212; the found-money pipeline</text>
+  <rect x="30" y="70" width="220" height="60" rx="4" fill="#f7f5f0" stroke="#d6d0c7"/>
+  <text x="140" y="97" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1a14">Opportunity stream</text>
+  <text x="140" y="116" text-anchor="middle" font-size="11" fill="#6b6459">settlements &#183; windows &#183; rules &#183; property</text>
+  <rect x="330" y="62" width="300" height="76" rx="4" fill="#fff" stroke="#1d1a14" stroke-width="1.5"/>
+  <text x="480" y="88" text-anchor="middle" font-size="14" font-weight="600" fill="#b34a08">TRIAGE GRAPH (Strands)</text>
+  <text x="480" y="108" text-anchor="middle" font-size="12" fill="#1d1a14">intake &#8594; research (Tavily) &#8594; price</text>
+  <text x="480" y="126" text-anchor="middle" font-size="11" fill="#6b6459">OpportunityMatch: value band &#183; deadline &#183; confidence</text>
+  <rect x="710" y="62" width="240" height="76" rx="4" fill="#f9e5d6" stroke="#e56b1e"/>
+  <text x="830" y="92" text-anchor="middle" font-size="14" font-weight="600" fill="#b34a08">&#128993; CONSENT CARD</text>
+  <text x="830" y="112" text-anchor="middle" font-size="11" fill="#1d1a14">SSN &#183; signature &#183; opt-in &#8212; then silence</text>
+  <text x="830" y="128" text-anchor="middle" font-size="11" fill="#6b6459">until the money is found</text>
+  <rect x="330" y="210" width="300" height="130" rx="4" fill="#fff" stroke="#1d1a14" stroke-width="1.5"/>
+  <text x="480" y="238" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1a14">CLAIM PIPELINE (quiet)</text>
+  <text x="480" y="258" text-anchor="middle" font-size="12" fill="#1d1a14">packet built from household profile</text>
+  <text x="480" y="276" text-anchor="middle" font-size="11" fill="#6b6459">file &#8594; info requests &#8594; denied? appeal w/ rule cited</text>
+  <text x="480" y="294" text-anchor="middle" font-size="11" fill="#6b6459">retries &#183; pacing &#183; step budget &#183; case dossier</text>
+  <text x="480" y="312" text-anchor="middle" font-size="11" fill="#6b6459">SQLite: opportunities &#183; turns &#183; consents &#183; ledger</text>
+  <g font-size="11" fill="#1d1a1a">
+    <rect x="80" y="400" width="190" height="54" rx="4" fill="#f7f5f0" stroke="#d6d0c7"/>
+    <text x="175" y="423" text-anchor="middle" font-weight="600">Riverside Power &amp; Light</text>
+    <text x="175" y="440" text-anchor="middle" font-size="10" fill="#6b6459">LIDR clerk-agent</text>
+    <rect x="300" y="400" width="190" height="54" rx="4" fill="#f7f5f0" stroke="#d6d0c7"/>
+    <text x="395" y="423" text-anchor="middle" font-weight="600">Meridian Air claims</text>
+    <text x="395" y="440" text-anchor="middle" font-size="10" fill="#6b6459">DOT delay clerk-agent</text>
+    <rect x="520" y="400" width="190" height="54" rx="4" fill="#f7f5f0" stroke="#d6d0c7"/>
+    <text x="615" y="423" text-anchor="middle" font-weight="600">State Controller</text>
+    <text x="615" y="440" text-anchor="middle" font-size="10" fill="#6b6459">unclaimed property examiner</text>
+    <rect x="730" y="400" width="190" height="54" rx="4" fill="#f7f5f0" stroke="#d6d0c7"/>
+    <text x="825" y="423" text-anchor="middle" font-weight="600">Settlements admin</text>
+    <text x="825" y="440" text-anchor="middle" font-size="10" fill="#6b6459">class-action processor</text>
   </g>
-  <text x="300" y="480" font-size="11" fill="#6f6754">every actor is an independent agent with private constraints —</text>
-  <text x="300" y="496" font-size="11" fill="#6f6754">accepts, counters, declines; A2A-swappable via the Msg schema</text>
-  <rect x="840" y="210" width="110" height="120" rx="8" fill="#e2eede" stroke="#2e6b3f" stroke-width="2"/>
-  <text x="895" y="238" text-anchor="middle" font-size="12" font-weight="700" fill="#2e6b3f">IMPACT</text>
-  <text x="895" y="258" text-anchor="middle" font-size="11" fill="#1a1610">meals</text>
-  <text x="895" y="274" text-anchor="middle" font-size="11" fill="#1a1610">kg saved</text>
-  <text x="895" y="290" text-anchor="middle" font-size="11" fill="#1a1610">$ value</text>
-  <g stroke="#1a1610" stroke-width="1.5" fill="none">
-    <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#1a1610"/></marker></defs>
+  <text x="330" y="480" font-size="11" fill="#6b6459">every issuing body is its own agent bound by its real internal rules &#8212;</text>
+  <text x="330" y="496" font-size="11" fill="#6b6459">it approves, demands documents, or denies; Windfall argues within them</text>
+  <rect x="30" y="210" width="130" height="130" rx="4" fill="#e2eede" stroke="#2e6b3f"/>
+  <text x="95" y="240" text-anchor="middle" font-size="12" font-weight="600" fill="#2e6b3f">FOUND MONEY</text>
+  <text x="95" y="262" text-anchor="middle" font-size="11" fill="#1d1a14">recovered</text>
+  <text x="95" y="278" text-anchor="middle" font-size="11" fill="#1d1a14">annualized</text>
+  <text x="95" y="294" text-anchor="middle" font-size="11" fill="#1d1a14">+ reference nos.</text>
+  <g stroke="#1d1a14" stroke-width="1.2" fill="none">
+    <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#1d1a14"/></marker></defs>
     <path d="M250,100 L326,100" marker-end="url(#arr)"/>
     <path d="M630,86 L706,86" marker-end="url(#arr)"/>
     <path d="M630,120 C680,140 700,180 760,206" marker-end="url(#arr)"/>
     <path d="M480,138 L480,206" marker-end="url(#arr)"/>
-    <path d="M630,260 L836,260" marker-end="url(#arr)"/>
-    <path d="M480,330 L480,396" marker-end="url(#arr)"/>
+    <path d="M330,270 L164,270" marker-end="url(#arr)"/>
+    <path d="M480,340 L480,396" marker-end="url(#arr)"/>
   </g>
 </svg>
